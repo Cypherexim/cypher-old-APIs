@@ -1,0 +1,98 @@
+const tableColumns = require("./columns");
+
+const getLastYearDate = (date) => {
+    const today = new Date(date);
+    const lastYearDate = new Date(date);
+    lastYearDate.setFullYear(today.getFullYear() - 1);
+    return lastYearDate.toISOString().split('T')[0];
+}
+selectQueryForTotalRecords: (direction, country) => `${tableColumns[direction][country].toString()} FROM`
+module.exports = {
+    DefaultPlan: 'Start-Up', // Default plan name
+    DefaultRole: 1,
+    companyProfileStartDate: getLastYearDate,
+    TOKEN_KEY:"CypherSecretKey",
+    /* Table names */
+    Plan: "plan",
+    Cypher: "Cypher",
+    HsCode: "HSCodes",
+    HsCode: "Test",
+    HsCode: "Country",
+    export_srilanka: "export_srilanka",
+    import_bangladesh: "import_bangladesh",
+    export_bangladesh: "export_bangladesh",
+    userplantransaction: "userplantransaction",
+    export_philip: "export_philip",
+    export_pakistan: "export_pakistan",
+    export_ivorycost:"export_ivorycost",
+    export_ecuador:"export_ecuador",
+    export_namibia:"export_namibia",
+    import_srilanka: "import_srilanka",
+    import_chile: "import_chile",
+    export_ethiopia: "export_ethiopia",
+    import_ethiopia: "import_ethiopia",
+    export_chile: "export_chile",
+    import_brazil:"import_brazil",
+    import_ivorycost:"import_ivorycost",
+    import_ecuador:"import_ecuador",
+    import_namibia:"import_namibia",
+    export_brazil:"export_brazil",
+    workspace: "workspace",
+    import_india: "import_india",
+    export_india: "export_india",
+    export_turkey:"export_turkey",
+    import_turkey:"import_turkey",
+    export_russia:"export_russia",
+    import_russia:"import_russia",
+    Dowload_cost: "Dowload_cost",
+    SideFilterAccess: "SideFilterAccess",
+    userdownloadtransaction: "userdownloadtransaction",
+    import_philip: "import_philip",
+    import_usa:"import_usa",
+    import_vietnam:"import_vietnam",
+    import_kenya:"import_kenya",
+    import_lesotho:"import_lesotho",
+    import_mexico:"import_mexico",
+    import_nigeria:"import_nigeria",
+    export_kenya:"export_kenya",
+    export_lesotho:"export_lesotho",
+    export_mexico:"export_mexico",
+    export_nigeria:"export_nigeria",
+    export_usa:"export_usa",
+    export_vietnam:"export_vietnam",
+    import_columbia:"import_columbia",
+    export_columbia:"export_columbia",
+    export_uganda:"export_uganda",
+    export_paraguay:"export_paraguay",
+    export_peru:"export_peru",
+    /* Select Queries */
+    //select_Query_for_totalrecords:'* FROM ',
+    select_Query_for_totalrecords:'* FROM',
+    selectQueryForTotalRecords: (direction, country) => `${tableColumns[direction][country].toString()} FROM`,
+    select_Query_for_totalCounts:'COUNT(distinct  "Exp_Name") as TotalExpName, COUNT(distinct  "Imp_Name") as TotalImpName, COUNT(distinct  "HsCode") as TotalHsCode FROM',
+    select_all_to_download:'* FROM',
+    WEEKLY_COLUMNS_DOWNLOAD: (direction) => direction == 'import' 
+    ? '"RecordID", "Date", "HsCode", "Exp_Name", "Imp_Name", "CountryofOrigin", "ProductDesc", "Quantity", "uqc", "BE_NO", "IEC",  "Currency", , "PortofOrigin", "PortofDestination", "Invoice_NO", "AssetValueINR", "UnitPriceFC", "DutyINR", "port_code", "Mode", "ValueInUSD" from'
+    : '"RecordID", "Date", "HsCode", "Exp_Name", "Imp_Name", "CountryofDestination", "ProductDesc", "Quantity", "uqc", "SB_NO", "IEC",  "Mode", "Currency", "FOB", "PortofOrigin", "PortofDestination", "Item_NO", "Invoice_NO", "UnitPriceFC", "Drawback", "port_code", "ValueInUSD" from',
+    INDIA_COLUMNS_DOWNLOAD: (direction) => direction == 'export'
+        ?'"RecordID", "Type" as "DIRECTION","Date" as "DATE","Month" as "MONTH","Year" as "YEAR","HsCode" as	"TARIFF CODE","HSCode2dig" as "TWO_DIGIT","HSCode4Dig" as "FOUR_DIGIT","ProductDesc" as "ITEM DESCRIPTION","CommodityDesc" as "COMMODITY_DESCRIPTION","uqc"	as "UQC","Quantity" as "QTY","Currency"	as "CURRENCY","UnitPriceFC" as "UNT PRICE FC","InvValueFC" as "EST_VALUE FC","ValueInUSD" as "EST VALUE US$","CountryofDestination" as "COUNTRY OF DESTINATION","Exchange_Rate" as "EXCHANGE_RATE","Imp_Name"	as "BUYER","Imp_Address"	as "BUYER ADDRESS","PortofDestination"	as "PORT_OF_DISCHARGE","Mode"	as "MODE_OF_PORT","PortofOrigin"	as "PORT_OF_LODING","Exp_Name"	as "SHIPPER","Exp_Address"	as "SHIPPER ADDRESS","Exp_City"	as "SHIPPER CITY","Exp_PIN"	as "SHIPPER PIN","Exp_Phone" as "SHIPPER PHONE","Exp_Email"	as "SHIPPER EMAIL","Exp_Contact_Person"	as "SHIPPER CONTACT PERSON", "UnitPriceINR" as "UNIT_INR", "FOB_INR"  FROM'
+        :'"RecordID", "Type" as "DIRECTION","Date" as "DATE","Month" as "MONTH","Year" as "YEAR","HsCode" as "TARIFF CODE","HSCode2dig" as "2 DIGIT","HSCode4Dig" as "4 DIGIT","ProductDesc" as "ITEM DESCRIPTION","CommodityDesc" as "COMMODITY DESCRIPITON","uqc" as "UQC","Quantity" as "QTY","Currency" as "CURR","UnitPriceFC" as "UNT PRICE FC","Duty_PCNTG" as "TAX %","ValueInUSD" as "EST VALUE US$","Importer_Value_USD" as "TOTAL VALUE US$","Exchange_Rate" as "EXCHANGE RATE","Exp_Name" as "VENDOR","EXPORTER_ADDRESS" as "VENDOR ADDRESS","CountryofOrigin" as "PARTNER COUNTRY","PortofOrigin" as "PORT OF LOADING","PortofDestination" as "PORT OF DISCHARGE","Mode" as "MODE","Imp_Name" as "BUYER","Importer_Address" as "BUYER ADDRESS","Importer_City" as "BUYER CITY","Importer_PIN" as "BUYER PIN","Importer_Phone" as "BUYER PHONE","Importer_Email" as "BUYER EMAIL","Importer_Contact_Person" as "BUYER CONTACT PERSON","BE_Type" as "BE TYPE","CHA_Name" as "NOTIFY PARTY NAME", "Duty_USD" as "DUTY_USD", "Duty_INR" as "DUTY_INR", "UnitPriceINR" as "UNIT_INR", "Asset_Value_INR" as "ASS_VAL_INR" FROM ',
+
+    // india_export_query:'"RecordID", "Type" as "DIRECTION","Date" as "DATE","Month" as "MONTH","Year" as "YEAR","HsCode" as	"TARIFF CODE","HSCode2dig" as "TWO_DIGIT","HSCode4Dig" as "FOUR_DIGIT","ProductDesc" as "ITEM DESCRIPTION","CommodityDesc" as "COMMODITY_DESCRIPTION","uqc"	as "UQC","Quantity" as "QTY","Currency"	as "CURRENCY","UnitPriceFC" as "UNT PRICE FC","InvValueFC" as "EST_VALUE FC","ValueInUSD" as "EST VALUE US$","CountryofDestination" as "COUNTRY OF DESTINATION","Exchange_Rate" as "EXCHANGE_RATE","Imp_Name"	as "BUYER","Imp_Address"	as "BUYER ADDRESS","PortofDestination"	as "PORT_OF_DISCHARGE","Mode"	as "MODE_OF_PORT","PortofOrigin"	as "PORT_OF_LODING","Exp_Name"	as "SHIPPER","Exp_Address"	as "SHIPPER ADDRESS","Exp_City"	as "SHIPPER CITY","Exp_PIN"	as "SHIPPER PIN","Exp_Phone" as "SHIPPER PHONE","Exp_Email"	as "SHIPPER EMAIL","Exp_Contact_Person"	as "SHIPPER CONTACT PERSON" FROM',
+    // india_import_query:'"RecordID", "Type" as "DIRECTION","Date" as "DATE","Month" as "MONTH","Year" as "YEAR","HsCode" as "TARIFF CODE","HSCode2dig" as "2 DIGIT","HSCode4Dig" as "4 DIGIT","ProductDesc" as "ITEM DESCRIPTION","CommodityDesc" as "COMMODITY DESCRIPITON","uqc" as "UQC","Quantity" as "QTY","Currency" as "CURR","UnitPriceFC" as "UNT PRICE FC","Duty_PCNTG" as "TAX %","ValueInUSD" as "EST VALUE US$","Importer_Value_USD" as "TOTAL VALUE US$","Exchange_Rate" as "EXCHANGE RATE","Exp_Name" as "VENDOR","EXPORTER_ADDRESS" as "VENDOR ADDRESS","CountryofOrigin" as "PARTNER COUNTRY","PortofOrigin" as "PORT OF LOADING","PortofDestination" as "PORT OF DISCHARGE","Mode" as "MODE","Imp_Name" as "BUYER","Importer_Address" as "BUYER ADDRESS","Importer_City" as "BUYER CITY","Importer_PIN" as "BUYER PIN","Importer_Phone" as "BUYER PHONE","Importer_Email" as "BUYER EMAIL","Importer_Contact_Person" as "BUYER CONTACT PERSON","BE_Type" as "BE TYPE","CHA_Name" as "NOTIFY PARTY NAME" FROM ',
+    /* Mail Configuration */
+    // fromEmail:'webeximpanel@gmail.com',
+    // fromPassword:'gayrsqtbgrlvltit',
+    fromEmail: "no-reply@cypherexim.com",//'no-reply@myeximpanel.com',
+    fromPassword: "noreply@123#",//'Dollar$1234@',
+    mailSMTP:"smtp.mail.us-east-1.awsapps.com",
+    userRegisterationmailSubject:'User Registered Successfully !',
+    userUpdatemailSubject:'User Updated Successfully !',
+    accountcreationmailBody:'Congratulations! Your account has been created successfully Your password is the first five letters of your first name, followed by the last five digits of your contact number.\n\n\ne.g abcdefg@xyz.com and +91 9876543210 so password will be Abcde3210 Click here to Login : https://cypherexim.com Thank you for showing your trust in our services. Your satisfaction is our priority, and we will continue to strive to provide you with the highest quality products and services. We look forward to continuing to build our relationship and for the opportunities that lie ahead. If you have any questions or concerns, please do not hesitate to contact us.',
+    downloadsourceemail:'Cypher<dispatch@cypherexim.com>',
+    downloadSubject:'Download the Report !'
+}
+
+
+
+
