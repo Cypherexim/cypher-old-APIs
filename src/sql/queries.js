@@ -20,7 +20,7 @@ module.exports = {
     enable_disable_user: `UPDATE public."Cypher" SET "Enable"=$1 WHERE "UserId"= $2;`,
     get_user_by_email: `SELECT "FullName", "CompanyName", "MobileNumber", "Email", "Password","RoleName", "Cypher"."UserId", "CountryCode", "ParentUserId", "Designation", "Location", "GST", "IEC", "Cypher"."RoleId", "Enable","userPreference", public.userplantransaction."PlanId", public.userplantransaction."Downloads", public.userplantransaction."Searches", 
     public.userplantransaction."StartDate", public.userplantransaction."EndDate", public.userplantransaction."Validity",
-    public.userplantransaction."DataAccess", public.userplantransaction."CountryAccess", 
+    public.userplantransaction."DataAccess", public.userplantransaction."CountryAccess", "userplantransaction"."UpdateCompanyNamePoints",
     public.userplantransaction."CommodityAccess", public.userplantransaction."TarrifCodeAccess", 
     public.userplantransaction."Workspace", public.userplantransaction."WSSLimit", public.userplantransaction."Downloadfacility",
     public.userplantransaction."Favoriteshipment", public.userplantransaction."Whatstrending", public.userplantransaction."Companyprofile", 
@@ -31,7 +31,7 @@ module.exports = {
     where "Email"=$1`,
     get_user_by_parentuser: `SELECT "FullName", "CompanyName", "MobileNumber", "Email", "Password","RoleName", "Cypher"."UserId", "CountryCode", "ParentUserId", "Designation", "Location", "GST", "IEC", "Cypher"."RoleId", "Enable","userPreference", public.userplantransaction."PlanId", public.userplantransaction."Downloads", public.userplantransaction."Searches", 
     public.userplantransaction."StartDate", public.userplantransaction."EndDate", public.userplantransaction."Validity",
-    public.userplantransaction."DataAccess", public.userplantransaction."CountryAccess", 
+    public.userplantransaction."DataAccess", public.userplantransaction."CountryAccess", "userplantransaction"."UpdateCompanyNamePoints",
     public.userplantransaction."CommodityAccess", public.userplantransaction."TarrifCodeAccess", 
     public.userplantransaction."Workspace", public.userplantransaction."WSSLimit", public.userplantransaction."Downloadfacility",
     public.userplantransaction."Favoriteshipment", public.userplantransaction."Whatstrending", public.userplantransaction."Companyprofile", 
@@ -73,11 +73,11 @@ module.exports = {
     add_Plan_Trasaction: `INSERT INTO public.userplantransaction("UserId", "PlanId", "Downloads", "Searches", "StartDate")
         VALUES ($1, $2, $3, $4, $5)`,
     add_Plan_Trasaction_by_admin: `INSERT INTO public.userplantransaction(
-        "UserId", "PlanId", "Downloads", "Searches", "StartDate", "EndDate", "Validity", "DataAccess", "CountryAccess", "CommodityAccess", "TarrifCodeAccess", "Workspace", "WSSLimit", "Downloadfacility", "Favoriteshipment", "Whatstrending", "Companyprofile", "Addonfacility", "Analysis", "User")
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20);`,
+        "UserId", "PlanId", "Downloads", "Searches", "StartDate", "EndDate", "Validity", "DataAccess", "CountryAccess", "CommodityAccess", "TarrifCodeAccess", "Workspace", "WSSLimit", "Downloadfacility", "Favoriteshipment", "Whatstrending", "Companyprofile", "Addonfacility", "Analysis", "User", "UpdateCompanyNamePoints")
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21);`,
     update_Plan_Trasaction_by_admin: `UPDATE public.userplantransaction
-	SET "PlanId"=$1, "Downloads"=$2, "Searches"=$3, "StartDate"=$4, "EndDate"=$5, "Validity"=$6, "DataAccess"=$7, "CountryAccess"=$8, "CommodityAccess"=$9, "TarrifCodeAccess"=$10, "Workspace"=$11, "WSSLimit"=$12, "Downloadfacility"=$13, "Favoriteshipment"=$14, "Whatstrending"=$15, "Companyprofile"=$16, "Addonfacility"=$17, "Analysis"=$18, "User"=$19
-	WHERE "UserId"=$20`,
+	SET "PlanId"=$1, "Downloads"=$2, "Searches"=$3, "StartDate"=$4, "EndDate"=$5, "Validity"=$6, "DataAccess"=$7, "CountryAccess"=$8, "CommodityAccess"=$9, "TarrifCodeAccess"=$10, "Workspace"=$11, "WSSLimit"=$12, "Downloadfacility"=$13, "Favoriteshipment"=$14, "Whatstrending"=$15, "Companyprofile"=$16, "Addonfacility"=$17, "Analysis"=$18, "User"=$19, "UpdateCompanyNamePoints"=$20
+	WHERE "UserId"=$21`,
     update_user_Access: `UPDATE public."UserAccess"
 	SET "AddUser"=$2, "EditUser"=$3, "DeleteUser"=$4, "AddPlan"=$5, 
 	"EditPlan"=$6, "DeletePlan"=$7, "Downloads"=$8, "Search"=$9, "EnableId"=$10, "DisableId"=$11, 
@@ -95,7 +95,7 @@ module.exports = {
     get_cypher_userby_id: `SELECT "ParentUserId" FROM public."Cypher" where "UserId"=$1`,
     get_Searches_By_UserId: `SELECT "userplantransaction"."UserId", "userplantransaction"."PlanId", "userplantransaction"."Downloads", 
     "userplantransaction"."Searches", "userplantransaction"."StartDate", "userplantransaction"."EndDate", 
-    "userplantransaction"."Validity", "userplantransaction"."DataAccess", 
+    "userplantransaction"."Validity", "userplantransaction"."DataAccess", "userplantransaction"."UpdateCompanyNamePoints",
     "userplantransaction"."CountryAccess", "userplantransaction"."CommodityAccess", "userplantransaction"."TarrifCodeAccess", "userplantransaction"."Workspace", 
     "userplantransaction"."WSSLimit", "userplantransaction"."Downloadfacility", "userplantransaction"."Favoriteshipment", "userplantransaction"."Whatstrending", "userplantransaction"."Companyprofile", 
     "userplantransaction"."Addonfacility", "userplantransaction"."Analysis", "userplantransaction"."User","userplantransaction"."Downloads","plan"."PlanName","userplantransaction"."Searches",("EndDate"- now()::date) AS Remainingdays,

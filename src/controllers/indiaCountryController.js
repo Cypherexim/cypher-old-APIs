@@ -18,7 +18,7 @@ exports.indiaCountry = {
                     query: "",
                     searchType: "data"
                 });
-                
+                console.log(query[0])
                 db.query(query[0], query[1].slice(1), (err, results) => {
                     if(!err) {
                         result.data = results.rows;
@@ -35,7 +35,6 @@ exports.indiaCountry = {
 
     export: async(req, res) => {
         try {
-            console.log(req.path)
             const { UserId, IsWorkspaceSearch=false } = req.body;
             const result = { counters: {}, data: {} };
             const check = await common.deductSearches(UserId, IsWorkspaceSearch);

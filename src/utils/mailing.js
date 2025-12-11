@@ -25,7 +25,7 @@ exports.SendEmail = async (toEmail, Subject, Message, carbonCopy="") => {
         cc: carbonCopy
     };
 
-    transporter.sendMail(mailOptions, function (error, info) {
+    transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.log(error);
         } else {

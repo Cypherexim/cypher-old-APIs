@@ -23,7 +23,6 @@ exports.weeklyApis = {
                 query: "",
                 searchType: "data"
             });
-            console.log(counterquery);
             
             db.query(counterquery[0], counterquery[1].slice(1), (err, results) => {
                 if(err) {return res.status(500).json(error(err.message, res.statusCode));}
@@ -49,7 +48,6 @@ exports.weeklyApis = {
                 query: "",
                 searchType: "data"
             });
-            console.log("weekly query=",counterquery[0]);
             
             db.query(counterquery[0], counterquery[1].slice(1), (err, results) => {
                 if(err) {return res.status(500).json(error(err.message, res.statusCode));}

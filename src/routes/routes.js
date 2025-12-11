@@ -302,6 +302,16 @@ router.use("/STATISTICAL", require("./statisticalCountries")); // all Statistica
 
 router.get("/stopAlertMsg", importController.stopAlertMsg);
 
+// router.post("/addOldFavoriteShipmentTemp", downloadController.addOldFavoriteShipmentTemp);
+router.post("/addNewFavoriteShipment", downloadController.addNewFavoriteShipment);
+router.post("/getUpdatedCompanyName", companyProfileController.getCompanyRevealed);
+router.get("/getUserToTheOrderPoint", companyProfileController?.getToTheOrderPoint);
+router.post("/removeFavoriteShipment", downloadController?.removeFavoriteShimpment);
+router.get("/getFavoriteShipmentIds", downloadController?.getFavoriteShipmentIDs);
+router.get("/getFavoriteShipments", downloadController?.getFavoriteShipments);
+router.get("/getShipmentRecordIds", downloadController?.getShipmentRecordIds);
+router.get("/getAllUserByCols", accountController?.getAllUserByCols);
+
 // router.post("/testingSideFilter", countryBodyValidator, allCountriesSideFilters.getCountrySidefilter)
 
 // router.post("/testingApi", companyProfileController.testingAPI);

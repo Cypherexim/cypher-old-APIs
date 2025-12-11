@@ -628,7 +628,7 @@ exports.allCountriesSideFilters = {
                     });
                     const withoutGroup = `${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}, ${group}${isSideFilter ? ` limit ${limit}`: ""}`;                        
                     const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
-
+                    
                     db.query(querySql, partialQuery[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));

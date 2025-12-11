@@ -77,9 +77,9 @@ exports.getDatabaseQuery = async (args) => {
                 const companiesList = columnName==="Imp_Name" ? Imp_Name: Exp_Name;
 
                 querytoexecute[0] = await unionCompanyGenerator({
-                    partialQuery: querytoexecute[0], 
-                    companyColName: columnName, 
-                    companyList: companiesList, 
+                    partialQuery: querytoexecute[0],
+                    companyColName: columnName,
+                    companyList: companiesList,
                     searchType: searchType
                 });
             } else {
@@ -87,13 +87,14 @@ exports.getDatabaseQuery = async (args) => {
                 querytoexecute[0] += addOn;
                 // if(["sidefilter","analysis"].includes(searchType.split("-")[0])) console.log(querytoexecute);
             }
-        } else {
-            querytoexecute[0] = await counterOrientedQueryGen({ 
-                importers: Imp_Name, 
-                exporters: Exp_Name, 
-                partialQuery: querytoexecute[0]
-            });
         }
+        //  else {
+        //     querytoexecute[0] = await counterOrientedQueryGen({ 
+        //         importers: Imp_Name, 
+        //         exporters: Exp_Name, 
+        //         partialQuery: querytoexecute[0]
+        //     });
+        // }
 
         const finalQuery = querytoexecute[0] + (isOrderBy ? ` ORDER BY "Date" DESC LIMIT ${Number(itemperpage)} OFFSET ${(Number(page) - 1) * Number(itemperpage)}` : "");
                 

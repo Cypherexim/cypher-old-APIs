@@ -18,7 +18,7 @@ exports.getIndiaImport = async(req, res) => {
                 isOrderBy: true,
                 query: ""
             });//req.body, config.import_india, true
-            console.log("QUEWRY",query);
+            
             db.query(query[0], query[1].slice(1), (err, results) => {
                 if(!err) {
                     result.data = results.rows;

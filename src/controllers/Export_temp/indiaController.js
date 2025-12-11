@@ -7,7 +7,6 @@ const config = require('../../utils/config');
 // to get import with search data
 exports.getindiaExport = async (req, res) => {
     try {
-        console.log("India Export");
         const { UserId, IsWorkspaceSearch=false } = req.body;
         const result = { counters: {}, data: {} };
         const check = await common.deductSearches(UserId, IsWorkspaceSearch);
@@ -25,7 +24,6 @@ exports.getindiaExport = async (req, res) => {
             //     PortofDestination,
             //     Mode, LoadingPort,
             //     NotifyPartyName, Currency, page, itemperpage, await common.getavailableFieldlist(config.export_india), config.export_india, false);
-            console.log(query[0]);
             
             db.query(query[0], query[1].slice(1), (err, results) => {
                 if (!err) {

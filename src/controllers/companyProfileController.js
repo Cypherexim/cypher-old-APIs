@@ -4,6 +4,7 @@ const utility = require('../utils/utility');
 const config = require('../utils/config');
 const queries = require('../sql/queries');
 
+
 // exports.getcompanyprofile_temp = async (req, res) => {
 //     //db.connect();
 //     try {        
@@ -49,7 +50,13 @@ exports.getCompanyProfileForFields = async(req, res) => {
         const dateFrom = config.companyProfileStartDate(date);
         
         const fieldList = ["'HsCode'", "'ValueInUSD'"];
-        fieldList.push(...(direction==="import" ? ["'Exp_Name'", "'CountryofOrigin'"]: ["'Imp_Name'", "'CountryofDestination'"]));
+        sameCompanyCountry
+        ? fieldList.push(...(direction==="import" ? ["'Exp_Name'", "'CountryofOrigin'"]: ["'Imp_Name'", "'CountryofDestination'"]))
+        : fieldList.push(...(direction==="import" ? ["'Imp_Name'", "'CountryofDestination'"]: ["'Exp_Name'", "'CountryofOrigin'"]));
+        // if(sameCompanyCountry) {
+        // } else {
+        // }
+        // fieldList.push(...(direction==="import" ? ["'Exp_Name'", "'CountryofOrigin'"]: ["'Imp_Name'", "'CountryofDestination'"]));
 
         ///////////////////////////////////////////////////////
         const {tableName} = utility.getCurrentTableName({countryType, direction, countryname});
@@ -68,7 +75,10 @@ exports.getCompanyProfileForFields = async(req, res) => {
         availablefield.rows.forEach(row => { selectedfields += `"${row?.column_name}",`; });
 
         const inCaseOfMirrorCountry = countryType==='MIRROR' ? `"${countryKey}" ilike '${req.body[countryKey]}' AND`: "";
-        const query = `SELECT ${selectedfields.replace(/,\s*$/, "")} FROM ${tableName} where "Date" >= $1 AND "Date" <= $2 AND ${inCaseOfMirrorCountry} "${companyColName}" like '%${companyname}%'`;
+        let query = `SELECT ${selectedfields.replace(/,\s*$/, "")} FROM ${tableName} where "Date" >= $1 AND "Date" <= $2 AND ${inCaseOfMirrorCountry} "${companyColName}" like '%${companyname}%'`;
+        if(!sameCompanyCountry) {
+            query = query.replace("FROM", `, '${countryname.toUpperCase()}' as "${direction==="import"? "CountryofDestination": "CountryofOrigin"}" FROM`)
+        }
 
         db.query(query, [dateFrom, dateTo], (err, results) => {
             if (!err) {
@@ -89,7 +99,7 @@ exports.getCompanyProfileOfShipments = async(req, res) => {
         const dateTo = utility.formatDate(new Date(date));
         const dateFrom = config.companyProfileStartDate(date);
         
-        const fieldList = ["'Exp_Name'", "'Imp_Name'", "'HsCode'", "'Quantity'", "'ValueInUSD'", "'CountryofDestination'",  "'CountryofOrigin'"].concat(sameCompanyCountry ? ["'Exp_Address'", "'Exp_City'", "'Exp_PIN'", "'Exp_Phone'", "'Exp_Email'", "'Importer_Address'", "'Importer_City'", "'Importer_PIN'", "'Importer_Phone'", "'Importer_Email'"].toLocaleString() : []);
+        const fieldList = ["'Exp_Name'", "'Imp_Name'", "'HsCode'", "'Quantity'", "'ValueInUSD'", "'CountryofDestination'",  "'CountryofOrigin'"]; //.concat(sameCompanyCountry ? ["'Exp_Address'", "'Exp_City'", "'Exp_PIN'", "'Exp_Phone'", "'Exp_Email'", "'Importer_Address'", "'Importer_City'", "'Importer_PIN'", "'Importer_Phone'", "'Importer_Email'"].toLocaleString() : []);
 
         // const tableName = `${direction.toLowerCase()}_${countryname.toLowerCase()}`;
         const {tableName} = utility.getCurrentTableName({countryType, direction, countryname});
@@ -108,7 +118,11 @@ exports.getCompanyProfileOfShipments = async(req, res) => {
         availablefield.rows.forEach(x => { selectedfields += '"' + x.column_name + '",'; });
 
         const inCaseOfMirrorCountry = countryType==='MIRROR' ? `"${countryKey}" ilike '${req.body[countryKey]}' AND`: "";
-        const query = `SELECT ${selectedfields.replace(/,\s*$/, "")} FROM ${tableName} where "Date" >= $1 AND "Date" <= $2 AND ${inCaseOfMirrorCountry} "${companyColName}" like '%${companyname}%' OFFSET ${offset} LIMIT ${limit}`;
+        let query = `SELECT ${selectedfields.replace(/,\s*$/, "")} FROM ${tableName} where "Date" >= $1 AND "Date" <= $2 AND ${inCaseOfMirrorCountry} "${companyColName}" like '%${companyname}%' OFFSET ${offset} LIMIT ${limit}`;
+        if(!sameCompanyCountry) {
+            query = query.replaceAll("FROM", `, '${countryname.toUpperCase()}' as "${direction==="import"? "CountryofDestination": "CountryofOrigin"}" FROM`)
+        }
+
 
         db.query(query, [dateFrom, dateTo], (err, results) => {
             if (!err) {
@@ -127,7 +141,11 @@ exports.getCompanyProfileTotalCounts = async(req, res) => {
         const dateFrom = config.companyProfileStartDate(date);
         
         const fieldList = ["'RecordID'", "'HsCode'", "'ValueInUSD'", "'Quantity'"];
-        fieldList.push(...(direction==="import" ? ["'Exp_Name'", "'CountryofOrigin'"]: ["'Imp_Name'", "'CountryofDestination'"]));
+        sameCompanyCountry
+        ? fieldList.push(...(direction==="import" ? ["'Exp_Name'", "'CountryofOrigin'"]: ["'Imp_Name'", "'CountryofDestination'"]))
+        : fieldList.push(...(direction==="import" ? ["'Imp_Name'", "'CountryofDestination'"]: ["'Exp_Name'", "'CountryofOrigin'"]));
+
+
 
         const {tableName} = utility.getCurrentTableName({countryType, direction, countryname});
         const countryKey = direction=="import" ? "CountryofDestination": "CountryofOrigin";
@@ -150,7 +168,13 @@ exports.getCompanyProfileTotalCounts = async(req, res) => {
 
         db.query(query, [dateFrom, dateTo], (err, results) => {
             if (!err) {
-                return res.status(200).json(success("Ok", results.rows, res.statusCode));
+                const result = results?.rows;
+                if(!sameCompanyCountry) {
+                    const updatedResult = [{...result[0], [countryKey]: result[0]["total"]==="0" ? "0": "1"}];
+                    return res.status(200).json(success("Ok", updatedResult, res.statusCode));
+                }
+
+                return res.status(200).json(success("Ok", result, res.statusCode));
             } else {
                 return res.status(200).json(error(err.message, res.statusCode));
             }
@@ -419,6 +443,58 @@ exports.getTopTenCompanies = (req, res) => {
         res.status(500).json(error(err, res.statusCode));
     }
 }
+
+
+
+const { backgroundTaskEvent } = require("../controllers/backgroundTasks");
+exports.getCompanyRevealed = (req, res) => {
+    try {
+        const { recordId, direction, country, userId, givenCompanyName } = req?.body;
+        const tableName = `${direction.toLowerCase()}_${country.toLowerCase()}`;
+        const sqlQuery = `select "Updated_Imp_Name" from ${tableName} where "RecordID"=$1`;
+
+        db.query(sqlQuery, [recordId], (err, result) => {
+            if(err) {res.status(500).json(error(err.message, res.statusCode));}
+            else {
+                res.status(200).json(success("OK", result?.rows, res?.statusCode));
+                backgroundTaskEvent.emit("set-totheorder-data", db, { recordId, userId, tableName, country, direction });
+                if(givenCompanyName!=="N/A" && givenCompanyName !== result?.rows[0]["Updated_Imp_Name"]) {
+                    backgroundTaskEvent.emit("update-user-point", db, { userId, userPointType: "UpdateCompanyNamePoints" });                
+                }
+            }
+        });
+    } catch (err) {
+        res.status(500).json(error(err, res.statusCode));
+    }
+}
+
+exports.getToTheOrderPoint = async(req, res) => {
+    try {
+        const sqlQuery = `select "UpdateCompanyNamePoints" from "userplantransaction" where "UserId"=${req?.query?.userId}`;
+        
+        db.query(sqlQuery, (err, result) => {
+            if(err) { res.status(500).json(error(err?.message, res?.statusCode)); }
+            else { res.status(200).json(success("OK", result.rows, res.statusCode)); }
+        });
+    } catch (err) { return res.status(500).json(error(err, res.statusCode)); }
+}
+
+// exports.getFavoriteShipment = (req, res) => {
+//     try {
+//         const { userId, isToTheOrder } = req?.query;
+//         const colName = isToTheOrder ? "to_the_order_ids": "shipment_ids";
+//         const sqlQuery = `select "${colName}" from "User_Favorites_Map" where user_id=$1 and active=true`
+
+//         db.query(sqlQuery, [userId], (err, result) => {
+//             if(err) {res.status(500).json(error(err.message, res.statusCode));}
+//             else { res.status(200).json(success("OK", result.rows, res.statusCode)); }
+//         });
+//     } catch (err) {
+//         res.status(500).json(error(err, res.statusCode));
+//     }
+// }
+
+
 
 exports.testingAPI = async(req, res) => {
     try {

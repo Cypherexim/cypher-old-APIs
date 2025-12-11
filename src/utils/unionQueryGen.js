@@ -7,7 +7,8 @@ exports.unionCompanyGenerator = (args) => {
             const addOn = ["sidefilter","analysis"].includes(searchType.split("-")[0]) ? ` GROUP BY ${searchType.split("-")[1]}`: "";
 
             for(let i=0; i<companyList?.length; i++) {
-                const sections = `(${partialQuery} AND "${companyColName}" ILIKE '${companyList[i]}' ${addOn})`;
+                const company = companyList[i]?.replaceAll("'", "''");
+                const sections = `(${partialQuery} AND "${companyColName}" ILIKE '${company}%' ${addOn})`;
                 unionSections.push(sections);
             }
 
@@ -36,10 +37,12 @@ exports.unionBothCompanyGenerator = (args) => {
 
             const addOn = ["sidefilter","analysis"].includes(searchType.split("-")[0]) ? ` GROUP BY ${searchType.split("-")[1]}`: "";
 
+            const singleQuoteReplacer = (company) => company?.replaceAll("'", "''");
+
             for(let i=0; i<loopLen; i++) {
                 const sections = direction==="export" 
-                ? `(${partialQuery} AND "${queryOptions?.exportColName}" ILIKE '${queryOptions?.exportersList[i]}' AND "${queryOptions?.importColName}" IN (${queryOptions?.importersList?.map(txt => `'${txt}'`)?.toString()}) ${addOn})`
-                : `(${partialQuery} AND "${queryOptions?.importColName}" ILIKE '${queryOptions?.importersList[i]}' AND "${queryOptions?.exportColName}" IN (${queryOptions?.exportersList?.map(txt => `'${txt}'`)?.toString()}) ${addOn})`
+                ? `(${partialQuery} AND "${queryOptions?.exportColName}" ILIKE '${singleQuoteReplacer(queryOptions?.exportersList[i])}%' AND "${queryOptions?.importColName}" IN (${queryOptions?.importersList?.map(txt => `'${singleQuoteReplacer(txt)}'`)?.toString()}) ${addOn})`
+                : `(${partialQuery} AND "${queryOptions?.importColName}" ILIKE '${singleQuoteReplacer(queryOptions?.importersList[i])}%' AND "${queryOptions?.exportColName}" IN (${queryOptions?.exportersList?.map(txt => `'${singleQuoteReplacer(txt)}'`)?.toString()}) ${addOn})`
                 
                 unionSections.push(sections);
             }

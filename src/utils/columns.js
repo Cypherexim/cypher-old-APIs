@@ -3,7 +3,7 @@ module.exports = {
         mirror: ['"RecordID"', '"TYPE"', '"Date"', '"HsCode"', '"ProductDesc_Native"', '"ProductDesc"', '"Quantity"', '"uqc"', '"UnitPriceFC"', '"Currency"', '"ValueInUSD"', '"Exp_Name_Native"', '"Exp_Name"', '"Imp_Name_Native"', '"Imp_Name"', '"CountryofDestination"'],
         china: ["*"],
         statistical: ["'RecordID'", "'HsCode'","'ProductDesc'","'Quantity'","'uqc'","'Currency'","'ValueInUSD'", "'CountryofDestination'"],
-        india: ['"RecordID"', '"Type"', '"Date"', '"HsCode"', '"ProductDesc"', '"Exp_Name"', '"Imp_Name"', '"CountryofDestination"', '"uqc"', '"Mode"', '"Quantity"', '"Currency"', '"UnitPriceFC"', '"InvValueFC"', '"ValueInUSD"', '"Exchange_Rate"', '"PortofDestination"', '"PortofOrigin"', '"SB_NO"'],
+        india: ['"RecordID"', '"Type"', '"Date"', '"HsCode"', '"ProductDesc"', '"Exp_Name"', '"Imp_Name"', '"CountryofDestination"', '"uqc"', '"Mode"', '"Quantity"', '"Currency"', '"UnitPriceFC"', '"InvValueFC"', '"ValueInUSD"', '"Exchange_Rate"', '"PortofDestination"', '"PortofOrigin"', '"SB_NO"', '"Updated_Imp_Name"'],
         weekly: ['"RecordID"', '"Date"', '"HsCode"', '"Exp_Name"', '"Imp_Name"', '"CountryofDestination"', '"ProductDesc"', '"Quantity"', '"uqc"', '"Mode"', '"Currency"', '"FOB"', '"PortofOrigin"', '"PortofDestination"', '"Item_NO"', '"Invoice_NO"', '"UnitPriceFC"', '"Drawback"', '"port_code"'],
         argentina: ["*"],
         bolivia: ["*"],

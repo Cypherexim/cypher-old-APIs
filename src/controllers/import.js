@@ -733,7 +733,7 @@ exports.getfirstListofSidefilterdata = async (req, res) => {
                 });
                 
                 const querySql = `${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}`;
-                console.log("first filter",querySql);
+                
                 db.query(querySql, partialQuery[1].slice(1), (err, results) => {
                     if (!err) {
                         // for (let i = 0; i < keys.length; i++) {
@@ -971,7 +971,7 @@ exports.getfifthListofSidefilterdata = async (req, res) => {
                 //     PortofDestination,
                 //     Mode, LoadingPort,
                 //     NotifyPartyName, Currency, 0, 0, selectQuery.replace(/,\s*$/, "") + ' FROM ', Direction.toLowerCase() + '_' + CountryName.toLowerCase(), false);
-                console.log("fifth filter", query[0]);
+                
                 db.query(query[0], query[1].slice(1), (err, results) => {
                     if (!err) {
                         for (let i = 0; i < keys.length; i++) {
@@ -989,8 +989,6 @@ exports.getfifthListofSidefilterdata = async (req, res) => {
             }
         }
     } catch (err) {
-        
-        console.log(err)
         return res.status(500).json(error(err, res.statusCode));
     };
 }
@@ -1043,7 +1041,7 @@ exports.getImportListofSidefilterdata = async (req, res) => {
                 //     PortofDestination,
                 //     Mode, LoadingPort,
                 //     NotifyPartyName, Currency, 0, 0, finalQuery + ' FROM ', Direction.toLowerCase() + '_' + CountryName.toLowerCase(), false);
-                console.log("import filter", querySql);
+                
                 
                 db.query(querySql, partialQuery[1].slice(1), (err, results) => {
                     if (!err) {
@@ -1181,15 +1179,12 @@ exports.getcounts = async (req, res) => {
             searchType: "count",
             query: await common.getavailableFieldlist(tableName, countryType)
         });
-
-        console.log(counterquery[0]);
         
         db.query(counterquery[0], counterquery[1].slice(1), (err, results) => {
             if (!err) {
                 result.counters = results.rows[0];
                 return res.status(200).json(success("Ok", result, res.statusCode));
             } else {
-                console.log(err, counterquery[0])
                 return res.status(500).json(error(err, res.statusCode));
             }
         });
@@ -1285,7 +1280,6 @@ exports.getLatestUserPref = (req, res) => {
         db.query(query.fetch_userPreferences, [req.query.email], (err, result) => {
             if(err) {return res.status(200).json(error(err.message, res.statusCode));}
             else {
-                console.log(JSON.parse(result.rows[0]["userPreference"]))
                 return res.status(200).json(success("Ok", result.rows[0], res.statusCode));}
         });        
     } catch (error) {

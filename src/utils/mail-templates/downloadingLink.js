@@ -1,5 +1,6 @@
 exports.downloadingTemplate = (linksArr) => {
   let linkListHtml = "";
+  const fileStr = linksArr?.length>1 ? "files": "file";
   linksArr.forEach(linkItem => {
     linkListHtml += `<p><a href="${linkItem.filePath}" style="color: #007bff;">${linkItem.workspacename}</a></p>`;
   });
@@ -56,11 +57,11 @@ return `
 <body>
   <div class="container">
     <div class="header">
-      <h1>Your File is Ready</h1>
+      <h1>Your File${linksArr?.length>1 ? "s are": " is"} Ready</h1>
     </div>
     <div class="content">
       <p>Dear Subscriber,</p>
-      <p>Your requested file is now available for download. Please download the files before they are expired after 7 days as of now. Click the link below to download the files:</p>      
+      <p>Your requested file is now available for download. Please download the ${fileStr} before they are expired after 7 days as of now. Click the link below to download the ${fileStr}:</p>
       ${linkListHtml}
     </div>
     <div class="footer">

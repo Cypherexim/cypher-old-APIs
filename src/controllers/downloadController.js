@@ -1176,7 +1176,84 @@ exports.generateDownloadbigfilesforalluser = async (req, res) => {
     }
 }
 */
+const { backgroundTaskEvent } = require("./backgroundTasks");
+exports.removeFavoriteShimpment = async(req, res) => {
+    try {
+        const { favoriteId, userId } = req?.body; //isFavoriteFromToTheOrder=false
+        const sqlQuery = `UPDATE "User_Favorite_Shipments" SET active=false WHERE shipment_id=$1 AND user_id=$2 AND active=true`;
+        
+        await db.query(sqlQuery, [favoriteId, userId]);
 
+        backgroundTaskEvent.emit("delete-favorite-shipment", db, {userId, favoriteId});
+
+        res?.status(200).json(success("REMOVED", [], res?.statusCode));
+    } catch (err) { res.status(500).json(error(err.message, 500)); }
+}
+
+// exports.addOldFavoriteShipmentTemp = (req, res) => {
+//     try {
+//         const { userId, dataObject} = req?.body;
+//         const timestamp = utility?.getCurrentIndianTime().toSQL();                
+        
+//         backgroundTaskEvent.emit("add-old-favorite-shipment-temp", db, { userId, timestamp, dataObject });
+
+//         res?.status(200).json(success("INSERTED", [], res?.statusCode));
+//     } catch (err) { res.status(500).json(error(err.message, 500)); }
+// }
+
+exports.addNewFavoriteShipment = async(req, res) => {
+    try {
+        const { userId, recordId, direction, country } = req?.body;
+        const timestamp = utility?.getCurrentIndianTime().toSQL();
+        const fetchingShipmentQuery = `SELECT * FROM ${direction}_${country} WHERE "RecordID"=$1`;
+
+        const shipmentRes = await db.query(fetchingShipmentQuery, [recordId]);
+        const jsonShipment = JSON.stringify(shipmentRes.rows[0]);
+        
+        backgroundTaskEvent.emit("add-new-favorite-shipment", db, { jsonShipment, userId, timestamp, recordId, direction, country });
+
+        res?.status(200).json(success("INSERTED", [], res?.statusCode));
+    } catch (err) { res.status(500).json(error(err.message, 500)); }
+}
+
+exports.getFavoriteShipmentIDs = async(req, res) => {
+    try {
+        const sqlQuery = `SELECT id, shipment_ids, to_the_order_ids FROM "User_Favorites_Map" WHERE user_id=$1 AND active=true`;
+        
+        const result = await db.query(sqlQuery, [req?.query?.userId]);
+        
+        res?.status(200).json(success("OK", result?.rows, res?.statusCode));
+    } catch (err) { res.status(500).json(error(err.message, 500)); }
+}
+
+exports.getFavoriteShipments = async(req, res) => {
+    try {
+        const { shipmentIds, userId } = req?.query;
+        const shipmentIdsArr = shipmentIds.split(",");
+        const sqlQuery = `SELECT shipment_id, favorite_shipment, country, transaction_time FROM "User_Favorite_Shipments" WHERE shipment_id=any($1) AND user_id=$2 AND active=true order by transaction_time desc`;
+        
+        const result = await db.query(sqlQuery, [shipmentIdsArr, userId]);
+        
+        res?.status(200).json(success("OK", result?.rows, res?.statusCode));
+    } catch (err) {
+        res.status(500).json(error(err.message, 500));
+    }
+}
+
+exports.getShipmentRecordIds = async(req, res) => {
+    try {
+        const { shipmentIds, userId, country, direction, isOnlyFavorites } = req?.query;
+        const shipmentIdsArr = shipmentIds.split(",");
+        
+        const sqlQuery = `SELECT record_id FROM "User_Favorite_Shipments" WHERE shipment_id=ANY($1) AND user_id=$2 AND country=$3 AND direction=$4${isOnlyFavorites ? " AND active=true" : ""}`;
+        
+        const result = await db.query(sqlQuery, [shipmentIdsArr, userId, country.toLowerCase(), direction.toLowerCase()]);
+        
+        res?.status(200).json(success("OK", result?.rows, res?.statusCode));
+    } catch (err) {
+        res.status(500).json(error(err.message, 500));
+    }
+}
 
 
 exports.updateFavoriteShipment = async(req, res) => {
@@ -1191,8 +1268,8 @@ exports.updateFavoriteShipment = async(req, res) => {
                 res.status(200).json(success(`${result.command} Successful.`, remaining, 200));
             }
         });
-    } catch (error) {
-        res.status(500).json(error(error, 500));
+    } catch (err) {
+        res.status(500).json(error(err.message, 500));
     }
 }
 
@@ -1202,14 +1279,11 @@ exports.updateCompanyPoints = async(req, res) => {
         db.query(query.UPDATE_COMPANY_POINTS, [userId], (err, result) => {
             if(err) {res.status(500).json(error(err.message, 500));}
             else {
-                console.log(result.rows[0]["Companyprofile"]);
                 const remaining = {remaining: result.rows[0]["Companyprofile"]};
                 res.status(200).json(success(`${result.command} Successful.`, remaining, 200));
             }
         });
-    } catch (error) {
-        res.status(500).json(error(error, 500));
-    }
+    } catch (err) { res.status(500).json(error(err.message, 500)); }
 }
 
 exports.updateWorkspacePoints = async(req, res) => {
@@ -1222,8 +1296,8 @@ exports.updateWorkspacePoints = async(req, res) => {
                 res.status(200).json(success(`${result.command} Successful.`, remaining, 200));
             }
         });
-    } catch (error) {
-        res.status(500).json(error(error, 500));
+    } catch (err) {
+        res.status(500).json(error(err.message, 500));
     }
 }
 

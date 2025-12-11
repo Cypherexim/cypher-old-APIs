@@ -79,7 +79,7 @@ exports.getAnalysisData = async (req, res) => {
                 }); 
                 const withoutGroup = finalqueryRes[0];//`${finalqueryRes[0]} GROUP BY "${fieldName}"`;
                 const finalQuery = setWithGroupQueryAnalysis(fieldName, withoutGroup);
-console.log(finalQuery)
+
                 db.query(finalQuery, finalqueryRes[1].slice(1), (err, result) => {
                     if (!err) {
                         fields = null;

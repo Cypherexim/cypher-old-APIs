@@ -36,7 +36,9 @@ exports.sendDownloadingLinkMail = async(req, res) => {
         
         if(result.rows.length > 0) {
             const htmlBody = downloadingTemplate(result.rows);
-            const emailRes = await mail.sendDownloadingLinkMail(userEmails[0], "Testing Downloading Links", htmlBody, userEmails.length>0 ? userEmails: "");
+            const emailRes = await mail.sendDownloadingLinkMail(userEmails[0], "Your Requested File Is Ready for Download", htmlBody, userEmails.length>0 ? userEmails: "");
+            console.log(emailRes);
+            
             return res.status(200).json(success("OK", "Links have been sent successfully", res.statusCode));
         }
     } catch (err) { return res.status(500).json(error(err, res.statusCode)); }
@@ -235,7 +237,7 @@ exports.enabledisableuser = async (req, res) => {
 
 exports.addUserByAdmin = async (req, res) => {
     const { FullName, CompanyName, MobileNumber, Email, Password, country, ParentUserId, Designation = null, Location = null, GST = null, IEC = null, RoleId
-        , PlanId, Downloads, Searches, StartDate, EndDate, Validity, DataAccess, CountryAccess, CommodityAccess,
+        , PlanId, Downloads, Searches, StartDate, EndDate, Validity, DataAccess, CountryAccess, CommodityAccess, UpdateCompanyNamePoint,
         TarrifCodeAccess, Workspace, WSSLimit, Downloadfacility, Favoriteshipment, Whatstrending, Companyprofile, Addonfacility, Analysis, User,
         AddUser, EditUser, DeleteUser, AddPlan, EditPlan, DeletePlan, DownloadsAccess, Search, EnableId, DisableId, BlockUser, UnblockUser, ClientList, PlanList, Share } = req.body;
 
@@ -258,7 +260,7 @@ exports.addUserByAdmin = async (req, res) => {
                 if (!err) {
                     db.query(query.add_Plan_Trasaction_by_admin, [result.rows[0].UserId, PlanId, Downloads, Searches, StartDate, EndDate,
                         Validity, DataAccess, CountryAccess, CommodityAccess, TarrifCodeAccess, Workspace, WSSLimit, Downloadfacility,
-                        Favoriteshipment, Whatstrending, Companyprofile, Addonfacility, Analysis, User], async(err, reslt) => {
+                        Favoriteshipment, Whatstrending, Companyprofile, Addonfacility, Analysis, User, UpdateCompanyNamePoint], async(err, reslt) => {
                             if (!err) {
                                 await db.query(query.add_user_Access, [AddUser, EditUser, DeleteUser, AddPlan, EditPlan, DeletePlan, DownloadsAccess, Search, EnableId, DisableId, BlockUser, UnblockUser, ClientList, PlanList, result.rows[0].UserId, Share]);
                                 await mail.SendEmail(Email, config.userRegisterationmailSubject, config.accountcreationmailBody);
@@ -275,8 +277,8 @@ exports.addUserByAdmin = async (req, res) => {
 }
 
 exports.updateUserByAdmin = async (req, res) => {
-    const { FullName, CompanyName, MobileNumber, Email, Password, country, UserId, Designation = null, Location = null, GST = null, IEC = null, RoleId
-        , PlanId, Downloads, Searches, StartDate, EndDate, Validity, DataAccess, CountryAccess, CommodityAccess,
+    const { FullName, CompanyName, MobileNumber, Email, country, UserId, Designation = null, Location = null, GST = null, IEC = null, RoleId
+        , PlanId, Downloads, Searches, StartDate, EndDate, Validity, DataAccess, CountryAccess, CommodityAccess, UpdateCompanyNamePoint,
         TarrifCodeAccess, Workspace, WSSLimit, Downloadfacility, Favoriteshipment, Whatstrending, Companyprofile, Addonfacility, Analysis, User,
         AddUser, EditUser, DeleteUser, AddPlan, EditPlan, DeletePlan, DownloadsAccess, Search, EnableId, DisableId, BlockUser, UnblockUser, ClientList, PlanList, Share } = req.body;
 
@@ -297,7 +299,7 @@ exports.updateUserByAdmin = async (req, res) => {
             if (!err) {
                 db.query(query.update_Plan_Trasaction_by_admin, [PlanId, Downloads, Searches, StartDate, EndDate,
                     Validity, DataAccess, CountryAccess, CommodityAccess, TarrifCodeAccess, Workspace, WSSLimit, Downloadfacility,
-                    Favoriteshipment, Whatstrending, Companyprofile, Addonfacility, Analysis, User, UserId], (err, result) => {
+                    Favoriteshipment, Whatstrending, Companyprofile, Addonfacility, Analysis, User, UpdateCompanyNamePoint, UserId], (err, result) => {
                         if (!err) {
                             db.query(query.update_user_Access, [UserId, AddUser, EditUser, DeleteUser, AddPlan, EditPlan, DeletePlan, DownloadsAccess, Search, EnableId, DisableId, BlockUser, UnblockUser, ClientList, PlanList, Share], (error, result) => {
 
@@ -328,6 +330,19 @@ exports.getAllUserlist = async (req, res) => {
         return res.status(500).json(error(err, res.statusCode));
     };
 }
+
+exports.getAllUserByCols = async(req, res) => {
+    try {        
+        const tableColStr = (req?.query?.cols)?.split(",")?.map(col => `"${col}"`)?.toString();
+        const sqlQuery = `SELECT cypher."UserId", ${tableColStr} FROM public."Cypher" as cypher inner join public.userplantransaction as plan 
+                          on cypher."UserId" = plan."UserId" OR cypher."ParentUserId" = plan."UserId" where cypher."Enable"=true and 
+                          plan."EndDate" >= $1 ORDER BY cypher."Email"`;
+
+        const response = await db.query(sqlQuery, [req?.query?.date]);
+        res?.status(200).json(success("OK", response?.rows, res?.statusCode));
+    } catch (err) { return res.status(500).json(error(err, res.statusCode)); }    
+}
+
 
 exports.userController = {
     getUserDetailsByEmail: (req, res) => {
