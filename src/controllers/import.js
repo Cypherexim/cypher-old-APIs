@@ -1248,16 +1248,12 @@ exports.updateAlertMessage = async (req, res) => {
 
 exports.stopAlertMsg = (req, res) => {
     try {
-        db.query(query.OFF_ALERT_MSG, (err, result) => {
-            if (!err) {
-                return res.status(200).json(success("Alerts are stopped", [], res.statusCode));
-            } else {
-                return res.status(200).json(error(err.message, res.statusCode));
-            }
+        const sqlQuery = `UPDATE "alert_msg" SET "show_popup"=$1, show_marquee=$2 WHERE "id"=1`;
+        db.query(sqlQuery, [req?.query?.popup, req?.query?.marquee], (err, result) => {
+            if (!err) { return res.status(200).json(success("Alerts are stopped", [], res.statusCode)); } 
+            else { return res.status(200).json(error(err.message, res.statusCode)); }
         });
-    } catch (err) {
-        return res.status(500).json(error(err, res.statusCode));
-    };
+    } catch (err) { return res.status(500).json(error(err, res.statusCode)); };
 }
 
 exports.updateUserPreference = async (req, res) => {

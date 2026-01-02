@@ -100,11 +100,14 @@ backgroundTaskEvent.on("delete-favorite-shipment", async(db, data) => {
     
     if(response?.rows?.length>0) {
         const shipmentIds = response?.rows[0]["shipment_ids"];
-        shipmentIds.splice(shipmentIds.indexOf(favoriteId), 1);
-        
-        const updateShipmentIds = `UPDATE "User_Favorites_Map" SET "shipment_ids"=$1 WHERE user_id=$2 AND active=true`;
-        
-        db.query(updateShipmentIds, [shipmentIds, userId]);
+
+        if(shipmentIds.indexOf(favoriteId) > -1) {
+            shipmentIds.splice(shipmentIds.indexOf(favoriteId), 1);
+            
+            const updateShipmentIds = `UPDATE "User_Favorites_Map" SET "shipment_ids"=$1 WHERE user_id=$2 AND active=true`;
+            
+            db.query(updateShipmentIds, [shipmentIds, userId]);
+        }
     }
 });
 

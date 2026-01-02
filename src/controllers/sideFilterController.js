@@ -3,7 +3,7 @@ const { success, error, extractCountry } = require('../../src/utils/response');
 const query = require('../../src/sql/queries');
 const common = require('../utils/common');
 const utility = require('../utils/utility');
-const { setWithGroupQuerySidefilter } = require('../utils/unionQueryGen');
+// const { setWithGroupQuerySidefilter } = require('../utils/unionQueryGen');
 
 
 const extractValue = (arr, prop) => {    
@@ -487,10 +487,10 @@ exports.allCountriesSideFilters = {
                         searchType: `sidefilter-${group}`
                     });
 
-                    const withoutGroup = `${query[0]}`//`${query[0]} Group By ${selectQuery.replace('Distinct ', "").replace(/,\s*$/, "")}, ${group}`;
-                    const finalQuery = setWithGroupQuerySidefilter(group, withoutGroup);
+                    const withoutGroup = `${query[0]} Group By ${selectQuery.replace('Distinct ', "").replace(/,\s*$/, "")}, ${group}`; //`${query[0]}`
+                    // const finalQuery = setWithGroupQuerySidefilter(group, withoutGroup);
 
-                    db.query(finalQuery, query[1].slice(1), (err, results) => {
+                    db.query(withoutGroup, query[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));
                         } else {
@@ -554,10 +554,10 @@ exports.allCountriesSideFilters = {
                         query: `${finalQuery} FROM `,
                         searchType: `sidefilter-${group}`
                     });
-                    const withoutGroup = `${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`;
-                    const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
+                    const withoutGroup = `${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`; 
+                    // const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
                     
-                    db.query(querySql, partialQuery[1].slice(1), (err, results) => {
+                    db.query(withoutGroup, partialQuery[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));
                         } else {
@@ -626,10 +626,10 @@ exports.allCountriesSideFilters = {
                         query: `${finalQuery} FROM `,
                         searchType: `sidefilter-${group}`
                     });
-                    const withoutGroup = `${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}, ${group}${isSideFilter ? ` limit ${limit}`: ""}`;                        
-                    const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
+                    const withoutGroup = `${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}, ${group}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`; 
+                    // const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
                     
-                    db.query(querySql, partialQuery[1].slice(1), (err, results) => {
+                    db.query(withoutGroup, partialQuery[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));
                         } else {
@@ -703,10 +703,10 @@ exports.allCountriesSideFilters = {
                         searchType: `sidefilter-${group}`
                     });
 
-                    const withoutGroup = `${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]} group by ${selectQuery.replace('Distinct ', "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`;
-                    const query = setWithGroupQuerySidefilter(group, withoutGroup);
+                    const withoutGroup = `${partialQuery[0]} group by ${selectQuery.replace('Distinct ', "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`;  //`${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`; 
+                    // const query = setWithGroupQuerySidefilter(group, withoutGroup);
 
-                    db.query(query, partialQuery[1].slice(1), (err, results) => {
+                    db.query(withoutGroup, partialQuery[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));
                         } else {
@@ -759,10 +759,10 @@ exports.allCountriesSideFilters = {
                         query: `${finalQuery} FROM `,
                         searchType: `sidefilter-${group}`
                     });
-                    const withoutGroup = `${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;//`${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`;
-                    const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
+                    const withoutGroup = `${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;
+                    // const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
 
-                    db.query(querySql, partialQuery[1].slice(1), (err, results) => {
+                    db.query(withoutGroup, partialQuery[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));
                         } else {
@@ -815,10 +815,10 @@ exports.allCountriesSideFilters = {
                         query: `${finalQuery} FROM `,
                         searchType: `sidefilter-${group}`
                     });
-                    const withoutGroup = `${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;//`${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`;
-                    const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
+                    const withoutGroup = `${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;
+                    // const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
 
-                    db.query(querySql, partialQuery[1].slice(1), (err, results) => {
+                    db.query(withoutGroup, partialQuery[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));
                         } else {
@@ -871,10 +871,10 @@ exports.allCountriesSideFilters = {
                         query: `${finalQuery} FROM `,
                         searchType: `sidefilter-${group}`
                     });
-                    const withoutGroup = `${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;//`${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`;
-                    const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
+                    const withoutGroup = `${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;
+                    // const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
 
-                    db.query(querySql, partialQuery[1].slice(1), (err, results) => {
+                    db.query(withoutGroup, partialQuery[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));
                         } else {
@@ -938,10 +938,10 @@ exports.allCountriesSideFilters = {
                         query: `${finalQuery} FROM `,
                         searchType: `sidefilter-${group}`
                     });
-                    const withoutGroup = `${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;//`${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`;
-                    const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
+                    const withoutGroup = `${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;
+                    // const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
 
-                    db.query(querySql, partialQuery[1].slice(1), (err, results) => {
+                    db.query(withoutGroup, partialQuery[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));
                         } else {
@@ -1005,10 +1005,10 @@ exports.allCountriesSideFilters = {
                         query: `${finalQuery} FROM `,
                         searchType: `sidefilter-${group}`
                     });
-                    const withoutGroup = `${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;//`${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`;
-                    const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
+                    const withoutGroup = `${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;
+                    // const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
 
-                    db.query(querySql, partialQuery[1].slice(1), (err, results) => {
+                    db.query(withoutGroup, partialQuery[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));
                         } else {
@@ -1060,10 +1060,10 @@ exports.allCountriesSideFilters = {
                         query: `${finalQuery} FROM `,
                         searchType: `sidefilter-${group}`
                     });
-                    const withoutGroup = `${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;//`${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`;
-                    const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
+                    const withoutGroup = `${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;
+                    // const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
                     
-                    db.query(querySql, partialQuery[1].slice(1), (err, results) => {
+                    db.query(withoutGroup, partialQuery[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));
                         } else {
@@ -1114,10 +1114,10 @@ exports.allCountriesSideFilters = {
                         query: `${finalQuery} FROM `,
                         searchType: `sidefilter-${group}`
                     });
-                    const withoutGroup = `${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;//`${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`;
-                    const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
+                    const withoutGroup = `${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;//
+                    // const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
 
-                    db.query(querySql, partialQuery[1].slice(1), (err, results) => {
+                    db.query(withoutGroup, partialQuery[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));
                         } else {
@@ -1228,10 +1228,10 @@ exports.allCountriesSideFilters = {
                         query: `${finalQuery} FROM `,
                         searchType: `sidefilter-${group}`
                     });
-                    const withoutGroup = `${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;//`${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`;
-                    const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
+                    const withoutGroup = `${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;
+                    // const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
 
-                    db.query(querySql, partialQuery[1].slice(1), (err, results) => {
+                    db.query(withoutGroup, partialQuery[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));
                         } else {
@@ -1282,10 +1282,10 @@ exports.allCountriesSideFilters = {
                         query: `${finalQuery} FROM `,
                         searchType: `sidefilter-${group}`
                     });
-                    const withoutGroup = `${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;//`${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`;
-                    const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
+                    const withoutGroup = `${partialQuery[0]} GROUP BY ${selectQuery.replace("Distinct ", "").replace(/,\s*$/, "")}${isSideFilter ? ` limit ${limit}`: ""}`; //`${partialQuery[0]}${isSideFilter ? ` limit ${limit}`: ""}`;
+                    // const querySql = setWithGroupQuerySidefilter(group, withoutGroup);
 
-                    db.query(querySql, partialQuery[1].slice(1), (err, results) => {
+                    db.query(withoutGroup, partialQuery[1].slice(1), (err, results) => {
                         if (!err) {
                             return res.status(200).json(success("Ok", results.rows, res.statusCode));
                         } else {

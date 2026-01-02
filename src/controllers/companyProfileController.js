@@ -456,9 +456,11 @@ exports.getCompanyRevealed = (req, res) => {
         db.query(sqlQuery, [recordId], (err, result) => {
             if(err) {res.status(500).json(error(err.message, res.statusCode));}
             else {
+                // const gebrishName = [{ Updated_Imp_Name: Array.from(result?.rows[0]["Updated_Imp_Name"]).map(s => (s.codePointAt(0)+3)).map(n => String.fromCodePoint(n)).join("") }];
+                
                 res.status(200).json(success("OK", result?.rows, res?.statusCode));
                 backgroundTaskEvent.emit("set-totheorder-data", db, { recordId, userId, tableName, country, direction });
-                if(givenCompanyName!=="N/A" && givenCompanyName !== result?.rows[0]["Updated_Imp_Name"]) {
+                if(givenCompanyName!=="N/A" && givenCompanyName !== result?.rows[0]["Updated_Imp_Name"]) { //in case of similar, no points will be deducted
                     backgroundTaskEvent.emit("update-user-point", db, { userId, userPointType: "UpdateCompanyNamePoints" });                
                 }
             }
@@ -467,6 +469,7 @@ exports.getCompanyRevealed = (req, res) => {
         res.status(500).json(error(err, res.statusCode));
     }
 }
+
 
 exports.getToTheOrderPoint = async(req, res) => {
     try {

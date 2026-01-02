@@ -84,6 +84,7 @@ module.exports = {
     // fromEmail:'webeximpanel@gmail.com',
     // fromPassword:'gayrsqtbgrlvltit',
     fromEmail: "no-reply@cypherexim.com",//'no-reply@myeximpanel.com',
+    toEmail: "dispatch@cypherexim.com",
     fromPassword: "noreply@123#",//'Dollar$1234@',
     mailSMTP:"smtp.mail.us-east-1.awsapps.com",
     userRegisterationmailSubject:'User Registered Successfully !',

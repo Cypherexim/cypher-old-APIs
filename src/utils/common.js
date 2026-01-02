@@ -26,12 +26,11 @@ exports.getDatabaseQuery = async (args) => {
             Mode, LoadingPort, NotifyPartyName, Currency, page=0, itemperpage=0 } = body;
     
         const params = [];
-        const searchFinalType = searchType.includes("-") ? searchType.split("-")[0]: searchType;
-        const isUnionAllow = ["data","analysis","sidefilter"].includes(searchFinalType);
+        // const searchFinalType = searchType.includes("-") ? searchType.split("-")[0]: searchType;
+        // const isUnionAllow = ["data","analysis","sidefilter"].includes(searchFinalType);
         const [direction, country] = tablename.split("_");
         const selectQuery = query==="" ? config.selectQueryForTotalRecords(direction, country) : query;
         const doesExist = (colName) => !(["", null, undefined].includes(colName));
-
         
         if (doesExist(ProductDesc)) {
             //const desc = ProductDesc[0].split(" ");
@@ -45,6 +44,9 @@ exports.getDatabaseQuery = async (args) => {
         if (doesExist(fromDate)) { params.push(utility.generateParams("Date", ">=", fromDate)); }
         if (doesExist(toDate)) { params.push(utility.generateParams("Date", "<=", toDate)); }
         if (doesExist(HsCode)) { params.push(utility.generateParams("HsCode", "LIKE", `(${HsCode.join("|")})%`)); } //'(300|500)%'     '(300|500)%'    //, "(" + HsCode.join("|") + ")%"
+        
+        if(country.toLowerCase()==="india" && !doesExist(HsCode)) { params.push(utility.generateParams("HsCode", "NOT SIMILAR", `(${[88, 93].join("|")})%`)); }
+        
         if (doesExist(CountryofOrigin)) { params.push(utility.generateParams("CountryofOrigin", "ANY", CountryofOrigin)) }
         if (doesExist(CountryofDestination)) { params.push(utility.generateParams("CountryofDestination", "ANY", CountryofDestination)) }
         if (doesExist(Month)) { params.push(utility.generateParams("Month", "ANY", Month)) }
@@ -57,37 +59,40 @@ exports.getDatabaseQuery = async (args) => {
         if (doesExist(Mode)) { params.push(utility.generateParams("Mode", "ANY", Mode)) }
         if (doesExist(LoadingPort)) { params.push(utility.generateParams("LoadingPort", "ANY", LoadingPort)) }
         if (doesExist(NotifyPartyName)) { params.push(utility.generateParams("NotifyPartyName", "ANY", NotifyPartyName)) }   
-        if (!isUnionAllow && doesExist(Imp_Name)) { params.push(utility.generateParams("Imp_Name", "ANY", Imp_Name)); } //multi push
-        if (!isUnionAllow && doesExist(Exp_Name)) { params.push(utility.generateParams("Exp_Name", "ANY", Exp_Name)); } //multi push
-                
-        let querytoexecute = utility.generateFilterQuery(params, selectQuery, tablename);        
-        
-        if(isUnionAllow) {
-            if(doesExist(Imp_Name) && doesExist(Exp_Name)) {
-                querytoexecute[0] = await unionBothCompanyGenerator({
-                    partialQuery: querytoexecute[0], 
-                    companyColNames: ["Imp_Name", "Exp_Name"], 
-                    companyList: [Imp_Name, Exp_Name], 
-                    direction: direction,
-                    searchType
-                });
-            } else if(doesExist(Imp_Name) || doesExist(Exp_Name)) {
-                const isImporterExist = doesExist(Imp_Name);
-                const columnName = isImporterExist ? "Imp_Name": "Exp_Name";
-                const companiesList = columnName==="Imp_Name" ? Imp_Name: Exp_Name;
+        if (doesExist(Imp_Name)) { params.push(utility.generateParams("Imp_Name", "ANY", Imp_Name)); } //multi push
+        if (doesExist(Exp_Name)) { params.push(utility.generateParams("Exp_Name", "ANY", Exp_Name)); } //multi push
 
-                querytoexecute[0] = await unionCompanyGenerator({
-                    partialQuery: querytoexecute[0],
-                    companyColName: columnName,
-                    companyList: companiesList,
-                    searchType: searchType
-                });
-            } else {
-                const addOn = ["sidefilter","analysis"].includes(searchType.split("-")[0]) ? ` GROUP BY ${searchType.split("-")[1]}`: "";
-                querytoexecute[0] += addOn;
-                // if(["sidefilter","analysis"].includes(searchType.split("-")[0])) console.log(querytoexecute);
-            }
-        }
+        let querytoexecute = utility.generateFilterQuery(params, selectQuery, tablename);                
+        
+        // if(isUnionAllow) {
+        //     if(doesExist(Imp_Name) && doesExist(Exp_Name)) {
+        //         querytoexecute[0] = await unionBothCompanyGenerator({
+        //             partialQuery: querytoexecute[0], 
+        //             companyColNames: ["Imp_Name", "Exp_Name"], 
+        //             companyList: [Imp_Name, Exp_Name], 
+        //             direction: direction,
+        //             searchType
+        //         });
+        //     } else if(doesExist(Imp_Name) || doesExist(Exp_Name)) {
+        //         const isImporterExist = doesExist(Imp_Name);
+        //         const columnName = isImporterExist ? "Imp_Name": "Exp_Name";
+        //         const companiesList = columnName==="Imp_Name" ? Imp_Name: Exp_Name;
+
+        //         querytoexecute[0] = await unionCompanyGenerator({
+        //             partialQuery: querytoexecute[0],
+        //             companyColName: columnName,
+        //             companyList: companiesList,
+        //             searchType: searchType
+        //         });
+        //     } else {
+        //         const addOn = ["sidefilter","analysis"].includes(searchType.split("-")[0]) ? ` GROUP BY ${searchType.split("-")[1]}`: "";
+        //         querytoexecute[0] += addOn;
+        //         // if(["sidefilter","analysis"].includes(searchType.split("-")[0])) console.log(querytoexecute);
+        //     }
+        // }
+
+
+
         //  else {
         //     querytoexecute[0] = await counterOrientedQueryGen({ 
         //         importers: Imp_Name, 
@@ -97,7 +102,7 @@ exports.getDatabaseQuery = async (args) => {
         // }
 
         const finalQuery = querytoexecute[0] + (isOrderBy ? ` ORDER BY "Date" DESC LIMIT ${Number(itemperpage)} OFFSET ${(Number(page) - 1) * Number(itemperpage)}` : "");
-                
+
         return resolve([finalQuery, querytoexecute[1]]);
     });
 }

@@ -254,7 +254,6 @@ module.exports = {
     GET_COUNTRY_CODES_LIST: "select country_name, replace(lower(country_name), ' ', '') AS country_value, country_code from country_codes where active=true order by country_name",
     ADD_COUNTRY_DURATION: `insert into "datauploadhistorybydate" ("CountryCode", "Direction", "LatestDate", "StartDate", "CountryType") values($1, $2, NULL, NULL, $3)`,
     GET_SIDEFILTER_ACCESS: `SELECT "Id", "HsCode", "ProductDesc", "Exp_Name", "Imp_Name", "CountryofDestination", "CountryofOrigin", "PortofOrigin", "Mode", "uqc", "Quantity", "Month", "Year", "Country", "Direction", "PortofDestination", "LoadingPort", "Currency", "NotifyPartyName", "CountryType" FROM public."SideFilterAccess" where "Country"=$1 AND "Direction"=$2 AND "CountryType"=$3 AND active=true`,
-    OFF_ALERT_MSG: `UPDATE "alert_msg" SET "show_popup"=false, show_marquee=false WHERE "id"=1`,
 
     get_all_userlog:`SELECT "Id", "Userlog"."UserId", "IP", "Userlog"."Location", "Searchcount", "Searchhistory", "Datetime", "Email" FROM public."Userlog" inner join "Cypher" on "Userlog"."UserId" = "Cypher"."UserId" ORDER BY "Datetime" DESC LIMIT 100 OFFSET $1`,
     get_user_action_log:`SELECT * FROM public."UserActionLog" where "LogType" ILIKE $1 ORDER BY "CreatedDate" DESC LIMIT 100 OFFSET $2`,

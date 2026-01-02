@@ -51,6 +51,11 @@ const queryCondition = (params) => {
                 values.push(params[i].value);
                 break;
             }
+            case "NOT SIMILAR": {
+                conditions.push(`"${params[i].name}" NOT SIMILAR TO ($${placeholderNum})`);
+                values.push(params[i].value);
+                break;
+            }
             case 'LIKE':
             case 'SIMILAR TO': {
                 if(params[i].name === "ProductDesc") {

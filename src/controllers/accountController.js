@@ -36,7 +36,7 @@ exports.sendDownloadingLinkMail = async(req, res) => {
         
         if(result.rows.length > 0) {
             const htmlBody = downloadingTemplate(result.rows);
-            const emailRes = await mail.sendDownloadingLinkMail(userEmails[0], "Your Requested File Is Ready for Download", htmlBody, userEmails.length>0 ? userEmails: "");
+            const emailRes = await mail.sendDownloadingLinkMail("Your Requested File Is Ready for Download", htmlBody, userEmails.length>0 ? userEmails: "");
             console.log(emailRes);
             
             return res.status(200).json(success("OK", "Links have been sent successfully", res.statusCode));

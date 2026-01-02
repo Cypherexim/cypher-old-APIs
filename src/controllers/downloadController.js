@@ -1190,16 +1190,16 @@ exports.removeFavoriteShimpment = async(req, res) => {
     } catch (err) { res.status(500).json(error(err.message, 500)); }
 }
 
-// exports.addOldFavoriteShipmentTemp = (req, res) => {
-//     try {
-//         const { userId, dataObject} = req?.body;
-//         const timestamp = utility?.getCurrentIndianTime().toSQL();                
+exports.addOldFavoriteShipmentTemp = (req, res) => {
+    try {
+        const { userId, dataObject} = req?.body;
+        const timestamp = utility?.getCurrentIndianTime().toSQL();                
         
-//         backgroundTaskEvent.emit("add-old-favorite-shipment-temp", db, { userId, timestamp, dataObject });
+        backgroundTaskEvent.emit("add-old-favorite-shipment-temp", db, { userId, timestamp, dataObject });
 
-//         res?.status(200).json(success("INSERTED", [], res?.statusCode));
-//     } catch (err) { res.status(500).json(error(err.message, 500)); }
-// }
+        res?.status(200).json(success("INSERTED", [], res?.statusCode));
+    } catch (err) { res.status(500).json(error(err.message, 500)); }
+}
 
 exports.addNewFavoriteShipment = async(req, res) => {
     try {
@@ -1219,12 +1219,48 @@ exports.addNewFavoriteShipment = async(req, res) => {
 exports.getFavoriteShipmentIDs = async(req, res) => {
     try {
         const sqlQuery = `SELECT id, shipment_ids, to_the_order_ids FROM "User_Favorites_Map" WHERE user_id=$1 AND active=true`;
-        
         const result = await db.query(sqlQuery, [req?.query?.userId]);
         
         res?.status(200).json(success("OK", result?.rows, res?.statusCode));
     } catch (err) { res.status(500).json(error(err.message, 500)); }
 }
+
+exports.getAllowedBookmarkIDs = async(req, res) => {
+    try {
+        const sqlQuery = `SELECT id, shipment_ids, to_the_order_ids FROM "User_Favorites_Map" WHERE user_id=$1 AND active=true`;
+
+        const result = await db.query(sqlQuery, [req?.query?.userId]);
+
+        if(result?.length>0) {
+            const combinedShipmentIds = [...result?.rows[0]?.["shipment_ids"], ...result?.rows[0]?.["to_the_order_ids"]];
+
+            const visibleShipmentQuery = `select shipment_id from "User_Favorite_Shipments" where "user_id"=143 and shipment_id in (${combinedShipmentIds.toString()}) and active=true`;
+            const visibleShipmentIdsRes = await db.query(visibleShipmentQuery);
+            const shipmentIds = visibleShipmentIdsRes?.rows?.map(item => item?.shipment_id);
+            result.rows[0]["shipment_ids"] = shipmentIds;
+
+            res?.status(200).json(success("OK", result?.rows, res?.statusCode));
+        } else { return res?.status(200).json(success("OK", result?.rows, res?.statusCode)); }
+    } catch (err) { res.status(500).json(error(err.message, 500)); }
+}
+
+exports.getFavoriteShipmentCount = async(req, res) => {
+    try {
+        const { toTheOrder, favorite, userId } = req?.body;
+        const sqlQuery1 = `SELECT COUNT(*) AS to_the_order_counts FROM "User_Favorite_Shipments" WHERE "user_id"=$1 AND active=true AND shipment_id=ANY($2)`;
+        const sqlQuery2 = `SELECT COUNT(*) AS favorite_counts FROM "User_Favorite_Shipments" WHERE "user_id"=$1 AND active=true AND shipment_id=ANY($2)`;
+
+        const toTheOrderRes = await db.query(sqlQuery1, [userId, toTheOrder]);
+        const favoriteRes = await db.query(sqlQuery2, [userId, favorite]);
+        const result = {
+            toTheOrderCount: toTheOrderRes?.rows[0]["to_the_order_counts"],
+            favoriteCount: favoriteRes?.rows[0]["favorite_counts"]
+        }
+
+        res?.status(200).json(success("OK", [result], res?.statusCode));
+    } catch (err) { res.status(500).json(error(err.message, 500)); }
+}
+
 
 exports.getFavoriteShipments = async(req, res) => {
     try {
@@ -1245,8 +1281,7 @@ exports.getShipmentRecordIds = async(req, res) => {
         const { shipmentIds, userId, country, direction, isOnlyFavorites } = req?.query;
         const shipmentIdsArr = shipmentIds.split(",");
         
-        const sqlQuery = `SELECT record_id FROM "User_Favorite_Shipments" WHERE shipment_id=ANY($1) AND user_id=$2 AND country=$3 AND direction=$4${isOnlyFavorites ? " AND active=true" : ""}`;
-        
+        const sqlQuery = `SELECT record_id FROM "User_Favorite_Shipments" WHERE shipment_id=ANY($1) AND user_id=$2 AND country=$3 AND direction=$4${isOnlyFavorites==="true" ? " AND active=true" : ""}`;
         const result = await db.query(sqlQuery, [shipmentIdsArr, userId, country.toLowerCase(), direction.toLowerCase()]);
         
         res?.status(200).json(success("OK", result?.rows, res?.statusCode));
@@ -1257,20 +1292,18 @@ exports.getShipmentRecordIds = async(req, res) => {
 
 
 exports.updateFavoriteShipment = async(req, res) => {
-    const {userId} = req.query;
     try {
-        db.query(query.UPDATE_FAVORITE_SHIPMENT, [userId], async(err, result) => {
+        const sqlQuery = `UPDATE "userplantransaction" SET "Favoriteshipment"="Favoriteshipment"::integer-1 WHERE "UserId"=$1`;
+        db.query(sqlQuery, [req?.query?.userId], async(err, result) => {
             if(err) {res.status(500).json(error(err.message, 500));}
             else {
                 const selectQuery = `select "Favoriteshipment" from "userplantransaction" where "UserId"=$1`;
-                const response  = await db.query(selectQuery, [userId]);
+                const response  = await db.query(selectQuery, [req?.query?.userId]);
                 const remaining = {remaining: response.rows[0]?.Favoriteshipment || 0};
                 res.status(200).json(success(`${result.command} Successful.`, remaining, 200));
             }
         });
-    } catch (err) {
-        res.status(500).json(error(err.message, 500));
-    }
+    } catch (err) { res.status(500).json(error(err.message, 500)); }
 }
 
 exports.updateCompanyPoints = async(req, res) => {

@@ -18,7 +18,7 @@ exports.getAnalysisData = async (req, res) => {
         if(countryType==="MIRROR" && countryname!=="china") {
             const extractedCountryName = extractCountry(countryname);
             const countryKey = direction=="import" ? "CountryofDestination": "CountryofOrigin";
-            if(req.body.hasOwnProperty(countryKey)) { req.body[countryKey].push(extractedCountryName); } 
+            if(req.body.hasOwnProperty(countryKey)) { req.body[countryKey].push(extractedCountryName); }
             else { req.body[countryKey] = [extractedCountryName]; }
         } else if(countryType==="STATISTICAL" && statCountryName!=="") {
             countryname = statCountryName;
@@ -46,7 +46,7 @@ exports.getAnalysisData = async (req, res) => {
 
                 for(let i=0; i<colLen; i++) {
                     const item = availablefield.rows[i];
-                    if (item.column_name.toString() != "UnitPriceUSD" && item.column_name.toString() != "UnitPriceFC") {
+                    if (item.column_name.toString() !== "UnitPriceUSD" && item.column_name.toString() != "UnitPriceFC") {
                         fields.push(`ROUND(SUM("${item.column_name.toString()}")::numeric,2) as ${item.column_name.toString()}`);
                     } else {
                         fields.push(`ROUND(AVG("${item.column_name.toString()}")::numeric,2) as ${item.column_name.toString()}`);
@@ -77,7 +77,7 @@ exports.getAnalysisData = async (req, res) => {
                     query: `"${fieldName}", ${fields.toString()} FROM `,
                     searchType: `analysis-"${fieldName}"`
                 }); 
-                const withoutGroup = finalqueryRes[0];//`${finalqueryRes[0]} GROUP BY "${fieldName}"`;
+                const withoutGroup = `${finalqueryRes[0]} GROUP BY "${fieldName}"`; //finalqueryRes[0];
                 const finalQuery = setWithGroupQueryAnalysis(fieldName, withoutGroup);
 
                 db.query(finalQuery, finalqueryRes[1].slice(1), (err, result) => {

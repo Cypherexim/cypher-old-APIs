@@ -34,7 +34,7 @@ exports.SendEmail = async (toEmail, Subject, Message, carbonCopy="") => {
     });
 }
 
-exports.sendDownloadingLinkMail = async (toEmail, Subject, htmlBody, carbonCopy="") => {
+exports.sendDownloadingLinkMail = async (Subject, htmlBody, recievers) => {
     const transporter = nodemailer.createTransport({
         host: config.mailSMTP,
         port: 465,
@@ -44,11 +44,10 @@ exports.sendDownloadingLinkMail = async (toEmail, Subject, htmlBody, carbonCopy=
 
     const mailOptions = {
         from: config.fromEmail,
-        to: toEmail,
+        to: config.toEmail,
         subject: Subject,
         html: htmlBody,
-        bcc: config.fromEmail,
-        cc: carbonCopy
+        bcc: recievers
     };
 
     await transporter.sendMail(mailOptions, (error, info) => {
