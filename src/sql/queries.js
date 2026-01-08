@@ -168,10 +168,8 @@ module.exports = {
     update_download_workspace: `UPDATE public.userdownloadtransaction SET "recordIds"= $1, "filePath"= $2, "status"= $3, "errorlog"= $4, "expirydate" = $5 WHERE "Id"= $6;`,
     ADD_DOWNLOADING_QUEUE: `insert into "downloading_queue" ("filename", "start_time", "current_status", "user_id", "active") values ($1, $2, $3, $4, true) returning download_id`,
 
-    get_download_Workspace: `SELECT "Id", countrycode as CountryName, "userId", direction,cardinality("recordIds") as totalrecords
-    , workspacename, datetime,"filePath","status","errorlog","expirydate"
-        FROM public.userdownloadtransaction WHERE ("userId"=$1 or
-        "userId" IN(SELECT "UserId" from public."Cypher" where "ParentUserId"=$1)) AND "active"=true`,
+    get_download_Workspace: `SELECT "Id", countrycode as CountryName, "userId", direction, total_records as totalrecords, workspacename, datetime,"filePath","status","errorlog","expirydate"
+        FROM public.userdownloadtransaction WHERE ("userId"=$1 or "userId" IN(SELECT "UserId" from public."Cypher" where "ParentUserId"=$1)) AND "active"=true`,
 
     update_download_count: `UPDATE public.userplantransaction SET "Downloads" = $1 WHERE "UserId"= $2`,
 

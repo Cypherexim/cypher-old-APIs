@@ -123,7 +123,6 @@ exports.getdownloaddata = async (req, res) => {
 
 
 
-
 exports.downloadingExcelFile1 = async (req, res) => {
     try {
         const { fromDate, toDate, HsCode, UserId, recordIds:selectedIds, CountryCode, direction, filename, countryType, totalDownloadCost } = req.body;
@@ -1288,6 +1287,10 @@ exports.getShipmentRecordIds = async(req, res) => {
     } catch (err) {
         res.status(500).json(error(err.message, 500));
     }
+}
+
+exports.setDownloadResponse = async(req, res) => {
+
 }
 
 

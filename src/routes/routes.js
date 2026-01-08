@@ -218,7 +218,11 @@ router.get('/getRolesAccessById', rolesController.getAccessByRoleId);
 router.post('/savedownloadworkspace', downloadController.saveDownload);
 router.get('/getdownloadworkspace', downloadController.getDownloadworkspace);
 router.post('/getdownloadData', downloadController.getdownloaddata);
-router.post('/generatedownloadfiles', downloadController.downloadingExcelFile1);//<--
+
+const { generateDownloadLink } = require("../controllers/downloadingController");
+router.post('/generatedownloadfiles', generateDownloadLink);
+
+//router.post('/generatedownloadfiles', downloadController.downloadingExcelFile1);//<--
 // router.post('/generatedownloadbigfiles', downloadController.generateDownloadbigfilesforalluser);
 router.post('/sharedownloadtransaction', downloadController.sharedownloadfile);
 
@@ -313,6 +317,7 @@ router.get("/getFavoriteShipments", downloadController?.getFavoriteShipments);
 router.get("/getShipmentRecordIds", downloadController?.getShipmentRecordIds);
 router.get("/getAllUserByCols", accountController?.getAllUserByCols);
 router.get("/updateFavoriteShipment", downloadController?.updateFavoriteShipment);
+router.post("/setDownloadResponse", downloadController?.setDownloadResponse);
 
 // router.post("/testingSideFilter", countryBodyValidator, allCountriesSideFilters.getCountrySidefilter)
 
